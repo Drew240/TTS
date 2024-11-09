@@ -4,7 +4,6 @@ import os
 import tkinter as tk
 from tkinter import filedialog
 
-
 engine = pyttsx3.init()
 
 
@@ -17,18 +16,40 @@ def load_file():
             dpg.set_value("text_input", text)
 
 
-#Esto es la funcion del text to speech
+#Esta funcion guarda el audio y permite cambiar el nombre 
+def save():
+    text = dpg.get_value("text_input")
+
+    root = tk.Tk()
+    root.withdraw()  
+
+    file_path = filedialog.asksaveasfilename(
+        defaultextension=".wav",
+        filetypes=[("Archivos WAV", "*.wav")],
+        initialdir="C:/Mis Archivos/Audio",  
+        title="Guardar archivo de audio")
+
+    if file_path:
+        try:
+            engine.save_to_file(text, file_path)
+
+            #Esto  Calcula estadísticas
+            words = len(text.split())
+            chars = len(text)
+            # Este es el popup de confirmación
+            dpg.show_item("confirmation_popup")
+            dpg.set_value("stats_text", f"Palabras: {words}\nCaracteres: {chars}\nArchivo guardado: {file_path}")
+
+        except Exception as e:
+            print(f"Error al guardar el archivo: {str(e)}")
+
+
+
+#Esta es la funcion de leer el texto
 def speak():
     text = dpg.get_value("text_input")
-    save_folder = filedialog.askdirectory()
-    
-   # Guardar audio
-    save_path = dpg.get_value("save_path")
-    if save_path:
-        save_path = save_path + ".wav"
-        engine.save_to_file(text, save_path)
 
-#Esto es por error que no leia bien el texto    
+   
     voices = engine.getProperty('voices')
     voice_map = {voice.name: i for i, voice in enumerate(voices)}
     selected_voice = dpg.get_value("voice_combo")
@@ -37,17 +58,17 @@ def speak():
     engine.setProperty('rate', dpg.get_value("rate_slider"))
     engine.setProperty('volume', dpg.get_value("volume_slider"))
 
+        
+    engine.say(text)
+    engine.runAndWait()
+
+
 
     #Esto da las palabras y caractares al final
     words = len(text.split())
     chars = len(text)
-    
-    engine.say(text)
-    engine.runAndWait()
-
-    # Muestra el popup de confirmación
     dpg.show_item("confirmation_popup")
-    dpg.set_value("stats_text", f"Palabras: {words}\nCaracteres: {chars}\nArchivo guardado: {save_path}")
+    dpg.set_value("stats_text", f"Palabras: {words}\nCaracteres: {chars}\n")
 
 
 
@@ -70,8 +91,9 @@ with dpg.window(label="Conversor de Texto a Voz"):
     dpg.add_slider_float(label="Volumen", min_value=0.0, max_value=1.0, default_value=1.0, tag="volume_slider")
 
     # Ruta para guardar el archivo
-    dpg.add_input_text(label="Insertar nombre:", tag="save_path")
-    dpg.add_button(label="Reproducir y Guardar", callback=speak)
+    
+    dpg.add_button(label="Reproducir", callback=speak)
+    dpg.add_button(label="Guardar", callback=save)
 
     # ventana de confirmación
     with dpg.window(label="Resultado", modal=True, show=False, tag="confirmation_popup"):
