@@ -7,7 +7,10 @@ Consta de 7 Partes
 3) SELECCIONAR VOZ: permite escoger de entre tres voces de TTS que vienen con el windows
 4) VELOCIDAD: Ajusta hasta un x2 la velocidad del auido
 5) VOLUMEN: Ajusta el volumen del audio
-6) INSERTAR NOMBRE: Aqui se pone el nombre del archivo a la hora
+6) REPRODUCIR: Reproduce el audio y muestras los caracteres y las palabras
+7) GUARDAR: Guarda el archivo en un ruta seleccionada
+
+
 
 
 Python 3.x (o una versión compatible)
